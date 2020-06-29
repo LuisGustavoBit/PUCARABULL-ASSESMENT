@@ -9,7 +9,7 @@ class Assesment extends Model
    
     Protected $table ='assesment';
   protected $fillable = [
-        'nombre_usuario', 'comentario',
+       'id' ,'nombre_usuario', 'comentario',
 
 
     ];

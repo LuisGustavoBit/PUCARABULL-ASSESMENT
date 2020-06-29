@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Assesment;
 use Response;
 use Validator;
+use Illuminate\Support\Facades\DB;
 
 class AssesmentController extends Controller
 {
@@ -44,13 +45,37 @@ class AssesmentController extends Controller
       ]);
     if($validator->fails()){
       return  Response::json(array('errors'=> $validator->getMessageBag()->toarray()));  
-     }
-     else{
-            $assesment= new Assesment();
+     }else{
+         
+    
+
+         $res= Assesment::where('assesment.nombre_usuario','=',$request->nombre_usuario)->get();
+      
+
+              if(sizeof($res)==0){
+                 $assesment= new Assesment();
             $assesment->nombre_usuario =$request->nombre_usuario;
             $assesment->comentario =$request->comentario;
             $assesment->save();
       return response()->json($assesment);
+
+              }else{
+               return response()->json(['errors'=>'nombre de usuario ya   esta registrado']);
+              }
+
+
+
+
+
+                 
+            
+
+
+
+
+
+
+    
    
   }
     }
@@ -65,7 +90,7 @@ class AssesmentController extends Controller
     {
       
   $validator= Validator::make ($request->all(),[
-    
+    'id'=>'required',
    
       ]);
 
@@ -73,9 +98,17 @@ class AssesmentController extends Controller
     if($validator->fails()){
       return  Response::json(array('errors'=> $validator->getMessageBag()->toarray()));  
      }else{
-        $assesment= Assesment::findOrFail($request->id);
-      return response()->json($assesment);
+            $data = Assesment::find($request->id);
+            if($data==null){
+                return response()->json(['errors'=>' no exite ningun registro con el id']);
+            }else{    
+     $assesment = Assesment::select('nombre_usuario','comentario','created_at','updated_at')->where('assesment.id','=',$request->id)->get();
+             return response()->json(['assesment' => $assesment]);
 
+        }            
+      
+
+     
      }
        
 
@@ -103,10 +136,17 @@ if($validator->fails()){
   }
   else{
 
+    $data = Assesment::find($request->id);
+            if($data==null){
+                return response()->json(['errors'=>' no exite ningun registro con el id, imposible actualizar']);
+            }else{
+
      $assesment = Assesment::findOrFail($request->id);
         $assesment->comentario =$request->comentario;
         $assesment->save();
      return response()->json($assesment);
+            }
+
   }
 
         //
@@ -131,11 +171,20 @@ if($validator->fails()){
       return  Response::json(array('errors'=> $validator->getMessageBag()->toarray()));  
      }
 
+
 else{
-    $assesment=Assesment::find($request->id)->delete();
+
+    $data = Assesment::find($request->id);
+            if($data==null){
+                return response()->json(['errors'=>' no exite ningun registro con el id, imposible eliminar']);
+            }else{
+ $assesment=Assesment::find($request->id)->delete();
 
  $respuesta = array('id' => $request->id );
- return response()->json($respuesta);
+ return response()->json(['errors'=>' eliminado con exito']);;
+            }
+
+   
 }
         //
     }

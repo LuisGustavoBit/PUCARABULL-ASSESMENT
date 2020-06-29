@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Assesment;
+use Response;
+use Validator;
 
 class AssesmentController extends Controller
 {
@@ -62,11 +65,11 @@ class AssesmentController extends Controller
     {
       
   $validator= Validator::make ($request->all(),[
-     'id'=>'required',
+    
    
       ]);
 
-     $id = $request->id;
+    
     if($validator->fails()){
       return  Response::json(array('errors'=> $validator->getMessageBag()->toarray()));  
      }else{
